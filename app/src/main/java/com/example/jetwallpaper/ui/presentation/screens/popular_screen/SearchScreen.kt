@@ -1,6 +1,9 @@
-package com.example.jetwallpaper.ui.presentation.screens.new_screen
+package com.example.jetwallpaper.ui.presentation.screens.popular_screen
 
 
+import android.util.Log
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -10,29 +13,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetwallpaper.ui.presentation.navigation.navigateToDetails
+import com.example.jetwallpaper.ui.presentation.screens.main.CustomSearchBar
 import com.example.jetwallpaper.ui.presentation.screens.main.LoadingScreen
-import com.example.jetwallpaper.ui.presentation.screens.popular_screen.WallpaperItem
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
+import com.example.jetwallpaper.ui.presentation.viewmodel.UiAction
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
 import com.example.jetwallpaper.ui.theme.Violet
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun NewScreen(
+fun SearchScreen(
     viewModel: MainViewModel,
     navController: NavHostController
 ) {
 
-    val wallpaperState = viewModel.newPager.collectAsLazyPagingItems()
+    val wallpaperState = viewModel.searchPager.collectAsLazyPagingItems()
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val uiEvent = viewModel.uiEvent.collectAsState(initial = UiEvent.Idle).value
 
 
@@ -40,7 +43,12 @@ fun NewScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(bottom = 56.dp),
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        topBar = {
+            CustomSearchBar { query ->
+                viewModel.updateSearchList(query,viewModel.accept)
+            }
+        }
     ) { padding ->
 
         when (uiEvent) {
@@ -58,10 +66,12 @@ fun NewScreen(
                     }
                 }
             }
+
             is UiEvent.Idle -> Unit
         }
 
-            when (wallpaperState.loadState.refresh) {
+        AnimatedContent(targetState = wallpaperState.loadState.refresh) { targetState ->
+            when (targetState) {
                 is LoadState.Loading -> {
                     LoadingScreen(
                         modifier = Modifier.fillMaxSize()
@@ -74,47 +84,45 @@ fun NewScreen(
                             action = "Retry"
                         )
                     )
-
                 }
-                else -> Unit
-            }
+                else ->  LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = padding
+                ){
 
-                when (wallpaperState.loadState.append) {
-                is LoadState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    CircularProgressIndicator(
-                        color = Violet
-                    )
-                }
-            }
-                is LoadState.Error -> {
-                viewModel.sendUiEvent(
-                    UiEvent.ShowSnackBar(
-                        message = "An Error occurred while loading content",
-                        action = "Retry"
-                    )
-                )
+                    when (wallpaperState.loadState.append) {
+                        is LoadState.Loading -> {
+                            item{
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    CircularProgressIndicator(color = Violet, modifier = Modifier.size(30.dp))
+                                }
+                            }
+                        }
+                        is LoadState.Error -> {
+                            viewModel.sendUiEvent(UiEvent.ShowSnackBar(
+                                message = "An Error occurred while loading content",
+                                action = "Retry"
+                            ))
+                        }
+                        else -> Unit
+                    }
 
-            }
-                else -> Unit
-            }
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.padding(padding)
-            ) {
-                items(wallpaperState.itemCount) { index ->
-                    wallpaperState[index]?.let {
-                        WallpaperItem(wallpaper = it, onClick = { wallpaper ->
-                            navController.navigateToDetails(viewModel, wallpaper)
-                        })
+                    items(wallpaperState.itemCount) { index ->
+                        wallpaperState[index]?.let {
+                            WallpaperItem(wallpaper = it, onClick = { wallpaper ->
+                                navController.navigateToDetails(viewModel,wallpaper)
+                            })
+                        }
                     }
                 }
             }
-
         }
+
+
     }
+}
