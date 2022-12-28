@@ -10,7 +10,7 @@ import com.example.jetwallpaper.ui.presentation.screens.details_screen.DetailsSc
 import com.example.jetwallpaper.ui.presentation.screens.details_screen.FullScreen
 import com.example.jetwallpaper.ui.presentation.screens.favourite_screen.FavouriteScreen
 import com.example.jetwallpaper.ui.presentation.screens.new_screen.NewScreen
-import com.example.jetwallpaper.ui.presentation.screens.popular_screen.SearchScreen
+import com.example.jetwallpaper.ui.presentation.screens.search_screen.SearchScreen
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
 
 @Composable

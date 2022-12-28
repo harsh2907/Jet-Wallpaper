@@ -10,13 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetwallpaper.ui.presentation.navigation.navigateToDetails
 import com.example.jetwallpaper.ui.presentation.screens.main.LoadingScreen
-import com.example.jetwallpaper.ui.presentation.screens.popular_screen.WallpaperItem
+import com.example.jetwallpaper.ui.presentation.screens.search_screen.WallpaperItem
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
 import com.example.jetwallpaper.ui.theme.Violet

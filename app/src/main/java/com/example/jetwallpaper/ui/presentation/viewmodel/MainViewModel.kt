@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.domain.repository.WallpaperRepository
+import com.example.jetwallpaper.domain.utils.Constants
 import com.example.jetwallpaper.ui.presentation.utils.WallpapersScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.random.Random
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -27,11 +29,12 @@ class MainViewModel @Inject constructor(
     init {
         loadSavedWallpapers()
 
+        val initialQuery = Constants.wallpaperThemes.random()
         val actionStateFlow = MutableSharedFlow<UiAction>()
         val searches = actionStateFlow
             .filterIsInstance<UiAction.Search>()
             .distinctUntilChanged()
-            .onStart { emit(UiAction.Search(query = "")) }
+            .onStart { emit(UiAction.Search(query = initialQuery)) }
 
         searchPager = searches
             .flatMapLatest { searchWallpaper(query = it.query) }
@@ -48,12 +51,10 @@ class MainViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-
     val newPager = repository.getNewWallpapers().cachedIn(viewModelScope)
 
     private val _savedWallpapers = MutableStateFlow(WallpapersScreenState())
     val savedWallpapers = _savedWallpapers.asStateFlow()
-
 
     private fun searchWallpaper(query: String): Flow<PagingData<Wallpaper>> {
       return repository.getSearchedWallpapers(query)

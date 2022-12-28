@@ -4,6 +4,7 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -24,30 +25,55 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.ui.presentation.navigation.Screens
 import com.example.jetwallpaper.ui.presentation.utils.*
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
+import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.placeholder
+import com.google.accompanist.placeholder.shimmer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalCoilApi::class)
 @Composable
 fun DetailsScreen(viewModel: MainViewModel, navController: NavHostController) {
     val currentWallpaper = viewModel.currentWallpaper
+    val uiEvent = viewModel.uiEvent.collectAsState(initial = UiEvent.Idle).value
 
     currentWallpaper?.let { wallpaper ->
 
         val context = LocalContext.current as Activity
         val scope = rememberCoroutineScope()
-
         val scaffoldState = rememberBottomSheetScaffoldState(
             bottomSheetState = BottomSheetState(
                 BottomSheetValue.Collapsed
             )
         )
+
+        when (uiEvent) {
+            is UiEvent.ShowSnackBar -> {
+                LaunchedEffect(key1 = true) {
+                    scope.launch {
+                        val action = scaffoldState.snackbarHostState.showSnackbar(
+                            message = uiEvent.message,
+                            actionLabel = uiEvent.action,
+                            duration = SnackbarDuration.Long
+                        )
+                        if (action == SnackbarResult.ActionPerformed) {
+
+                        }
+                    }
+                }
+            }
+            is UiEvent.Idle -> Unit
+        }
+
+
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
             sheetContent = {
@@ -106,13 +132,36 @@ fun DetailsScreen(viewModel: MainViewModel, navController: NavHostController) {
             },
             sheetElevation = 20.dp,
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-            sheetBackgroundColor = Color.Black.copy(alpha = 0.4f)
+            sheetBackgroundColor = if(isSystemInDarkTheme()) Color.Black else MaterialTheme.colors.background
         ) {
+
+            val imagePainter = rememberImagePainter(data = wallpaper.imageUrl)
+            var showShimmer by remember{ mutableStateOf(false) }
+
+             showShimmer = when(imagePainter.state){
+                 is ImagePainter.State.Success -> false
+                 is ImagePainter.State.Error -> {
+                     viewModel.sendUiEvent(
+                         UiEvent.ShowSnackBar(
+                             message = "An unknown error occurred.Please try again later",
+                             action = "Retry"
+                         )
+                     )
+                     true
+                 }
+                 else -> true
+            }
+
             Image(
-                painter = rememberImagePainter(data = wallpaper.imageUrl),
+                painter = imagePainter,
                 contentDescription = wallpaper.id,
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .placeholder(
+                        visible = showShimmer,
+                        color = Color.DarkGray,
+                        highlight = PlaceholderHighlight.shimmer(highlightColor = Color.LightGray)
+                    ),
                 contentScale = ContentScale.Crop
             )
 
@@ -161,7 +210,7 @@ fun BottomSheetIcons(
             modifier = Modifier
                 .size(50.dp)
                 .padding(8.dp)
-                .bounceClick{
+                .bounceClick {
                     onOpenBrowser(wallpaper.url)
                 }
 
@@ -172,7 +221,7 @@ fun BottomSheetIcons(
             modifier = Modifier
                 .size(50.dp)
                 .padding(8.dp)
-                .bounceClick{
+                .bounceClick {
                     onFullView(wallpaper.imageUrl)
                 }
         )
