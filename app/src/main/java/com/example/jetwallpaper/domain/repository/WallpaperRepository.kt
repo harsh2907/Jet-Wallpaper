@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface WallpaperRepository {
 
-     fun getPopularWallpapers(pageSize:Int):Flow<PagingData<Wallpaper>>
+     fun getPopularWallpapers():Flow<PagingData<Wallpaper>>
 
-     fun getNewWallpapers(pageSize: Int) : Flow<PagingData<Wallpaper>>
+     fun getNewWallpapers() : Flow<PagingData<Wallpaper>>
 
-     fun getSearchedWallpapers(search:String,page: Int) : Flow<Response<SearchResultDTO>>
+     fun getSearchedWallpapers(search:String) : Flow<PagingData<Wallpaper>>
 
      fun getFavouriteWallpapers():Flow<List<Wallpaper>>
 

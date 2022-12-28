@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             JetWallpaperTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -97,4 +98,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }

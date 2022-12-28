@@ -1,46 +1,64 @@
 package com.example.jetwallpaper.ui.presentation.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
+import androidx.paging.*
 import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.domain.repository.WallpaperRepository
-import com.example.jetwallpaper.domain.utils.Response
-import com.example.jetwallpaper.ui.pagination.NewWallpaperPagingSource
-import com.example.jetwallpaper.ui.pagination.PopularWallpaperPagingSource
-import com.example.jetwallpaper.ui.pagination.SearchPagingSource
+import com.example.jetwallpaper.domain.utils.Constants
 import com.example.jetwallpaper.ui.presentation.utils.WallpapersScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import retrofit2.http.Query
 import javax.inject.Inject
+import kotlin.random.Random
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: WallpaperRepository
 ) : ViewModel() {
 
+    val searchPager:Flow<PagingData<Wallpaper>>
+    var accept:(UiAction)->Unit
 
     init {
         loadSavedWallpapers()
+
+        val initialQuery = Constants.wallpaperThemes.random()
+        val actionStateFlow = MutableSharedFlow<UiAction>()
+        val searches = actionStateFlow
+            .filterIsInstance<UiAction.Search>()
+            .distinctUntilChanged()
+            .onStart { emit(UiAction.Search(query = initialQuery)) }
+
+        searchPager = searches
+            .flatMapLatest { searchWallpaper(query = it.query) }
+            .cachedIn(viewModelScope)
+
+        accept = {action->
+            viewModelScope.launch { actionStateFlow.emit(action) }
+        }
+
     }
 
     var currentWallpaper: Wallpaper? = null
 
-    val popularPager = repository.getPopularWallpapers(PAGE_SIZE).cachedIn(viewModelScope)
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
-    val newPager = repository.getNewWallpapers(PAGE_SIZE).cachedIn(viewModelScope)
+    val newPager = repository.getNewWallpapers().cachedIn(viewModelScope)
 
     private val _savedWallpapers = MutableStateFlow(WallpapersScreenState())
     val savedWallpapers = _savedWallpapers.asStateFlow()
 
+    private fun searchWallpaper(query: String): Flow<PagingData<Wallpaper>> {
+      return repository.getSearchedWallpapers(query)
+    }
 
     private fun loadSavedWallpapers() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -66,8 +84,32 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    companion object {
-        const val PAGE_SIZE = 12
+    fun sendUiEvent(event: UiEvent){
+        viewModelScope.launch {
+            _uiEvent.send(event)
+        }
     }
 
+    fun updateSearchList(query: String,onQueryChanged:(UiAction)->Unit){
+        onQueryChanged(UiAction.Search(query.trim()))
+    }
+
+    companion object {
+        const val PAGE_SIZE = 24
+    }
+
+}
+
+sealed class UiEvent{
+    data class ShowSnackBar(
+        val message:String,
+        val action:String?= null
+    ) :UiEvent()
+
+    object Idle:UiEvent()
+
+}
+
+sealed class UiAction{
+    data class Search(val query: String):UiAction()
 }

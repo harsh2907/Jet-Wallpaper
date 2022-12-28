@@ -18,7 +18,6 @@ fun MainScreen(
     navController:NavHostController,
     viewModel: MainViewModel
 ) {
-    val scaffoldState = rememberScaffoldState()
     val navBackStack by navController.currentBackStackEntryAsState()
     Scaffold(modifier = Modifier.fillMaxSize(),
     bottomBar = {

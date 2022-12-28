@@ -5,6 +5,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,7 +24,7 @@ import com.example.jetwallpaper.ui.theme.*
 
 sealed class BottomNavItem(val title:String, val icon:ImageVector, val route:String){
 
-    object Popular: BottomNavItem("Popular",Icons.Outlined.Star, Screens.Popular.route)
+    object Popular: BottomNavItem("Search",Icons.Outlined.Search, Screens.Search.route)
     object New: BottomNavItem("New",Icons.Outlined.LocalFireDepartment, Screens.New.route)
     object Favourite: BottomNavItem("Favourite",Icons.Outlined.Favorite, Screens.Favourite.route)
 
