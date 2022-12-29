@@ -33,7 +33,7 @@ package and update it with your api key.
 ```
 
 ## Screenshots
-![Home Screen](/docs/screenshots/2.jpeg)
-![Search Screen](/docs/screenshots/3.jpeg)
-![Search Screen](/docs/screenshots/4.jpeg)
-![Favourite Screen](/docs/screenshots/1.jpeg)
+![1](https://user-images.githubusercontent.com/71754826/209925781-8a8e2e11-4383-414c-9f63-7f98de5ed9cd.jpeg)
+![2](https://user-images.githubusercontent.com/71754826/209925787-6e0371a4-fe5d-41d2-8382-af022b9396cf.jpeg)
+![3](https://user-images.githubusercontent.com/71754826/209925790-ec1a7388-28c0-4ac2-8e99-e925cc0de9cb.jpeg)
+![4](https://user-images.githubusercontent.com/71754826/209925794-434bb2ec-21dd-42d9-bc70-1bfcd90fd225.jpeg)
