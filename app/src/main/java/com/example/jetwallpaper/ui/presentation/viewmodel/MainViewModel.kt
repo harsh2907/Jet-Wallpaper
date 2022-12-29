@@ -1,6 +1,5 @@
 package com.example.jetwallpaper.ui.presentation.viewmodel
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.*
@@ -15,7 +14,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.random.Random
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -29,6 +28,7 @@ class MainViewModel @Inject constructor(
     init {
         loadSavedWallpapers()
 
+        //Initial Query
         val initialQuery = Constants.wallpaperThemes.random()
         val actionStateFlow = MutableSharedFlow<UiAction>()
         val searches = actionStateFlow
