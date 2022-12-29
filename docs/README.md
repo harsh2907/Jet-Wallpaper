@@ -32,3 +32,8 @@ package and update it with your api key.
   }
 ```
 
+## Screenshots
+![Home Screen](/docs/screenshots/2.jpeg)
+![Search Screen](/docs/screenshots/3.jpeg)
+![Search Screen](/docs/screenshots/4.jpeg)
+![Favourite Screen](/docs/screenshots/1.jpeg)
