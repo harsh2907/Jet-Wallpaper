@@ -33,10 +33,10 @@ package and update it with your api key.
 ```
 
 ## Screenshots
-<div style="text-align: center;">
+<p align="center">
   <img src="https://user-images.githubusercontent.com/71754826/209925781-8a8e2e11-4383-414c-9f63-7f98de5ed9cd.jpeg" width="200" style="margin-right: 80px;" alt="Image 1">
   <img src="https://user-images.githubusercontent.com/71754826/209925787-6e0371a4-fe5d-41d2-8382-af022b9396cf.jpeg" width="200" style="margin-right: 80px;" alt="Image 2">
   <img src="https://user-images.githubusercontent.com/71754826/209925790-ec1a7388-28c0-4ac2-8e99-e925cc0de9cb.jpeg" width="200" style="margin-right: 80px;" alt="Image 3">
   <img src="https://user-images.githubusercontent.com/71754826/209925794-434bb2ec-21dd-42d9-bc70-1bfcd90fd225.jpeg" width="200" alt="Image 4">
-</div>
+</p>
 
