@@ -24,10 +24,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetwallpaper.R
 import com.example.jetwallpaper.ui.presentation.navigation.navigateToDetails
 import com.example.jetwallpaper.ui.presentation.screens.main.CustomSearchBar
-import com.example.jetwallpaper.ui.presentation.screens.main.LoadingScreen
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
 import com.example.jetwallpaper.ui.theme.Violet
+import com.example.jetwallpaper.ui.util.CustomLoading
 import kotlinx.coroutines.launch
 
 
@@ -79,9 +79,7 @@ fun SearchScreen(
         AnimatedContent(targetState = wallpaperState.loadState.refresh) { targetState ->
             when (targetState) {
                 is LoadState.Loading -> {
-                    LoadingScreen(
-                        modifier = Modifier.fillMaxSize()
-                    )
+                   CustomLoading()
                 }
                 is LoadState.Error -> {
                     viewModel.sendUiEvent(
@@ -109,10 +107,7 @@ fun SearchScreen(
                                             horizontalArrangement = Arrangement.End,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            CircularProgressIndicator(
-                                                color = Violet,
-                                                modifier = Modifier.size(30.dp)
-                                            )
+                                           CircularProgressIndicator(color = Violet)
                                         }
                                     }
                                 }
