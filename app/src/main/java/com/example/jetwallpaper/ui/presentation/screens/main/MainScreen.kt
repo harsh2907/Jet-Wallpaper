@@ -1,18 +1,18 @@
 package com.example.jetwallpaper.ui.presentation.screens.main
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.jetwallpaper.ui.presentation.navigation.NavScreen
-import com.example.jetwallpaper.ui.presentation.navigation.Screens
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen(
     navController:NavHostController,
@@ -26,8 +26,7 @@ fun MainScreen(
             BottomNav(navController = navController)
         }
     }
-    ) {paddingValues ->
-        val p = paddingValues
+    ) {
         NavScreen(navController = navController,viewModel)
     }
 }

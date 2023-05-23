@@ -8,17 +8,16 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetwallpaper.ui.presentation.navigation.navigateToDetails
-import com.example.jetwallpaper.ui.presentation.screens.main.LoadingScreen
 import com.example.jetwallpaper.ui.presentation.screens.search_screen.WallpaperItem
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
 import com.example.jetwallpaper.ui.theme.Violet
+import com.example.jetwallpaper.ui.util.CustomLoading
 import kotlinx.coroutines.launch
 
 
@@ -31,7 +30,6 @@ fun NewScreen(
     val wallpaperState = viewModel.newPager.collectAsLazyPagingItems()
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val uiEvent = viewModel.uiEvent.collectAsState(initial = UiEvent.Idle).value
 
 
@@ -62,9 +60,7 @@ fun NewScreen(
 
             when (wallpaperState.loadState.refresh) {
                 is LoadState.Loading -> {
-                    LoadingScreen(
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    CustomLoading()
                 }
                 is LoadState.Error -> {
                     viewModel.sendUiEvent(
