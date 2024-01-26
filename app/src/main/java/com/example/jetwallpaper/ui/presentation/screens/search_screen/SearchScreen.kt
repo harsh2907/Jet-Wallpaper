@@ -9,6 +9,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -20,38 +25,40 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetwallpaper.R
+import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.ui.presentation.navigation.navigateToDetails
 import com.example.jetwallpaper.ui.presentation.screens.main.CustomSearchBar
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
+import com.example.jetwallpaper.ui.presentation.viewmodel.UiAction
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
 import com.example.jetwallpaper.ui.theme.Violet
 import com.example.jetwallpaper.ui.util.CustomLoading
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchScreen(
-    viewModel: MainViewModel,
-    navController: NavHostController
+    wallpaperState: LazyPagingItems<Wallpaper>,
+    uiEvent: UiEvent,
+    onEvent:(UiEvent)->Unit,
+    updateSearchList:(String)->Unit,
+    navigateToDetails:(Wallpaper)->Unit
 ) {
 
-    val wallpaperState = viewModel.searchPager.collectAsLazyPagingItems()
-    val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val uiEvent = viewModel.uiEvent.collectAsState(initial = UiEvent.Idle).value
     val keyboard = LocalSoftwareKeyboardController.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 56.dp),
-        scaffoldState = scaffoldState,
+            .fillMaxSize() ,
         topBar = {
             CustomSearchBar { query ->
-                viewModel.updateSearchList(query, viewModel.accept)
+                 updateSearchList(query)
                 keyboard?.hide()
             }
         }
@@ -61,7 +68,7 @@ fun SearchScreen(
             is UiEvent.ShowSnackBar -> {
                 LaunchedEffect(key1 = true) {
                     scope.launch {
-                        val action = scaffoldState.snackbarHostState.showSnackbar(
+                        val action =  snackbarHostState.showSnackbar(
                             message = uiEvent.message,
                             actionLabel = uiEvent.action,
                             duration = SnackbarDuration.Long
@@ -76,13 +83,16 @@ fun SearchScreen(
             is UiEvent.Idle -> Unit
         }
 
-        AnimatedContent(targetState = wallpaperState.loadState.refresh) { targetState ->
+        AnimatedContent(
+            targetState = wallpaperState.loadState.refresh,
+            label = ""
+        ) { targetState ->
             when (targetState) {
                 is LoadState.Loading -> {
                    CustomLoading()
                 }
                 is LoadState.Error -> {
-                    viewModel.sendUiEvent(
+                    onEvent(
                         UiEvent.ShowSnackBar(
                             message = "An Error occurred while loading content",
                             action = "Retry"
@@ -112,7 +122,7 @@ fun SearchScreen(
                                     }
                                 }
                                 is LoadState.Error -> {
-                                    viewModel.sendUiEvent(
+                                    onEvent(
                                         UiEvent.ShowSnackBar(
                                             message = "An Error occurred while loading content",
                                             action = "Retry"
@@ -134,7 +144,7 @@ fun SearchScreen(
                             items(wallpaperState.itemCount) { index ->
                                 wallpaperState[index]?.let {
                                     WallpaperItem(wallpaper = it, onClick = { wallpaper ->
-                                        navController.navigateToDetails(viewModel, wallpaper)
+                                        navigateToDetails(wallpaper)
                                     })
                                 }
                             }

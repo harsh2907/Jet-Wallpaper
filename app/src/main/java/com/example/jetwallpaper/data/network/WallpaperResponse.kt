@@ -14,6 +14,7 @@ interface WallpaperResponse {
         @Query("q") queryParam: String,
         @Query("sorting") sorting: String,
         @Query("page") page: Int,
+        @Query("purity") purity: Int = 100,
         @Query("apikey") apiKey:String = Constants.API_KEY
     ):SearchResultDTO
 

@@ -9,35 +9,39 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.*
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.paging.compose.LazyPagingItems
+import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.ui.presentation.navigation.navigateToDetails
 import com.example.jetwallpaper.ui.presentation.screens.search_screen.NoResultFound
 import com.example.jetwallpaper.ui.presentation.screens.search_screen.WallpaperItem
+import com.example.jetwallpaper.ui.presentation.utils.WallpapersScreenState
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
 import com.example.jetwallpaper.ui.util.CustomLoading
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@OptIn(ExperimentalAnimationApi::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FavouriteScreen(
-    navController: NavHostController,
-    viewModel: MainViewModel
+    uiEvent: UiEvent,
+    savedWallpaperState: WallpapersScreenState,
+    navigateToDetails:(Wallpaper)->Unit,
+    onEvent:(UiEvent)->Unit
 ) {
-    val wallpaperState by viewModel.savedWallpapers.collectAsState()
-    val uiEvent = viewModel.uiEvent.collectAsState(initial = UiEvent.Idle).value
-    val scaffoldState = rememberScaffoldState()
+
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 56.dp),
-        scaffoldState = scaffoldState
+            .fillMaxSize() ,
     ){
         when (uiEvent) {
             is UiEvent.Idle -> Unit
@@ -45,7 +49,7 @@ fun FavouriteScreen(
             is UiEvent.ShowSnackBar -> {
                 LaunchedEffect(key1 = true) {
                     scope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar(
+                         snackbarHostState.showSnackbar(
                             message = uiEvent.message,
                             actionLabel = uiEvent.action,
                             duration = SnackbarDuration.Long
@@ -55,7 +59,10 @@ fun FavouriteScreen(
             }
         }
         
-        AnimatedContent(targetState = wallpaperState) { targetState ->
+        AnimatedContent(
+            targetState = savedWallpaperState,
+            label = "wallpaper"
+        ) { targetState ->
 
             when {
                 targetState.isLoading -> {
@@ -63,14 +70,14 @@ fun FavouriteScreen(
                 }
 
                 targetState.error.isNotBlank() -> {
-                    viewModel.sendUiEvent(UiEvent.ShowSnackBar(
+                    onEvent(UiEvent.ShowSnackBar(
                         message = targetState.error,
                         action = "OK"
                     ))
                 }
 
                 targetState.wallpapers.isEmpty() -> {
-                    viewModel.sendUiEvent(UiEvent.ShowSnackBar(
+                    onEvent(UiEvent.ShowSnackBar(
                         message =  "No wallpapers found. Try saving them from other sections.",
                         action = "OK"
                     ))
@@ -83,7 +90,7 @@ fun FavouriteScreen(
                     ) {
                         items(targetState.wallpapers) { wallpaper ->
                             WallpaperItem(wallpaper = wallpaper, onClick = { wp ->
-                                navController.navigateToDetails(viewModel, wp)
+                                navigateToDetails(wp)
                             })
                         }
                     }

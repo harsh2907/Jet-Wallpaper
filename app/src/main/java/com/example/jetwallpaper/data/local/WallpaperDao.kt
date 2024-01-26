@@ -20,4 +20,6 @@ interface WallpaperDao {
     @Delete
     suspend fun deleteWallpaper(wallpaper: Wallpaper)
 
+
+
 }
