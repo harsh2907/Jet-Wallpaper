@@ -19,7 +19,8 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = Color.Black
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -56,25 +57,28 @@ fun JetWallpaperTheme(
     }
 
     val view = LocalView.current
+    val backgroundColor = if (isSystemInDarkTheme()) {
+        Color.Black
+    }else{
+        Color(red = 255, green = 251, blue = 254)
+    }
+
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
+            window.statusBarColor = backgroundColor.toArgb()
+            window.navigationBarColor = UiColors.BottomNavColor.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
 
-    val backgroundColor = if (!isSystemInDarkTheme()) {
-        Color(red = 255, green = 251, blue = 254)
-    }else{
-        Color(red = 28, green = 27, blue = 31)
-    }
+
 
     SideEffect {
         val window = (view.context as Activity).window
 
         window.statusBarColor = backgroundColor.toArgb()
-        window.navigationBarColor = backgroundColor.toArgb()
+        window.navigationBarColor = UiColors.BottomNavColor.toArgb()
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

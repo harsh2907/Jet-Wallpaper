@@ -1,4 +1,4 @@
-package com.example.jetwallpaper.domain.utils
+package com.example.jetwallpaper.data.utils
 
 import com.example.jetwallpaper.BuildConfig
 

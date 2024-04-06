@@ -1,19 +1,11 @@
 package com.example.jetwallpaper.ui.pagination
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.jetwallpaper.data.network.WallpaperResponse
 import com.example.jetwallpaper.domain.models.Wallpaper
-import com.example.jetwallpaper.domain.repository.WallpaperRepository
-import com.example.jetwallpaper.domain.utils.Constants
-import com.example.jetwallpaper.domain.utils.Response
+import com.example.jetwallpaper.data.utils.Constants
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel.Companion.PAGE_SIZE
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import java.io.IOException
 

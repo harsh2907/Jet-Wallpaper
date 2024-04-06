@@ -6,18 +6,12 @@ import androidx.paging.PagingData
 import com.example.jetwallpaper.data.local.WallpaperDao
 import com.example.jetwallpaper.data.network.WallpaperResponse
 import com.example.jetwallpaper.domain.models.Wallpaper
-import com.example.jetwallpaper.domain.models.search_result.SearchResultDTO
 import com.example.jetwallpaper.domain.repository.WallpaperRepository
-import com.example.jetwallpaper.domain.utils.Constants
-import com.example.jetwallpaper.domain.utils.Response
 import com.example.jetwallpaper.ui.pagination.NewWallpaperPagingSource
 import com.example.jetwallpaper.ui.pagination.PopularWallpaperPagingSource
 import com.example.jetwallpaper.ui.pagination.SearchPagingSource
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel.Companion.PAGE_SIZE
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
-import java.io.IOException
 
 class WallpaperRepositoryImpl(
     private val api:WallpaperResponse,

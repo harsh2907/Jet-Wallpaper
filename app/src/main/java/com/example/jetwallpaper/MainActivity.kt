@@ -11,21 +11,19 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.example.jetwallpaper.ui.presentation.screens.main.ErrorComponent
 import com.example.jetwallpaper.ui.presentation.screens.main.JetWallpaperNavScreen
 import com.example.jetwallpaper.ui.theme.JetWallpaperTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,13 +32,15 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             JetWallpaperTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize() ,
+                    modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val hasPermission = rememberSaveable { mutableStateOf(true) }
+
+                    var hasPermission by remember { mutableStateOf(true) }
 
                     val requestPermission = rememberMultiplePermissionsState(
                         permissions = when {
@@ -49,11 +49,13 @@ class MainActivity : ComponentActivity() {
                                     android.Manifest.permission.READ_MEDIA_IMAGES
                                 )
                             }
+
                             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
                                 listOf(
                                     android.Manifest.permission.ACCESS_NETWORK_STATE
                                 )
                             }
+
                             else -> {
                                 listOf(
                                     android.Manifest.permission.ACCESS_NETWORK_STATE,
@@ -65,39 +67,21 @@ class MainActivity : ComponentActivity() {
                     )
 
 
-                    val lifecycleOwner = LocalLifecycleOwner.current
-                    DisposableEffect(key1 = lifecycleOwner, effect = {
-                        val observer = LifecycleEventObserver { _, event ->
-                            if (event == Lifecycle.Event.ON_RESUME) {
-                                requestPermission.launchMultiplePermissionRequest()
+                    LifecycleResumeEffect(key1 = Unit) {
+                        requestPermission.launchMultiplePermissionRequest()
 
-                            }
-                        }
-                        lifecycleOwner.lifecycle.addObserver(observer)
+                        onPauseOrDispose {  }
+                    }
 
-                        onDispose {
-                            lifecycleOwner.lifecycle.removeObserver(observer)
-                        }
-                    })
-
-                    requestPermission.permissions.forEach { ps ->
-                        if (ps.hasPermission) {
-                            hasPermission.value = true
-                        }
-                        if (ps.shouldShowRationale) {
-                            hasPermission.value = false
-                        }
-                        if (!ps.hasPermission && !ps.shouldShowRationale) {
-                            hasPermission.value = false
-                        }
+                    requestPermission.permissions.map { ps ->
+                        hasPermission = ps.status.isGranted
                     }
 
                     AnimatedContent(
-                        targetState = hasPermission.value,
+                        targetState = hasPermission,
                         transitionSpec = {
-                            (slideInVertically() + fadeIn()).togetherWith(
-                                slideOutVertically() + fadeOut()
-                            )
+                            (slideInVertically() + fadeIn())
+                                .togetherWith(slideOutVertically() + fadeOut())
                         },
                         label = ""
                     ) { targetState ->
@@ -116,3 +100,4 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+

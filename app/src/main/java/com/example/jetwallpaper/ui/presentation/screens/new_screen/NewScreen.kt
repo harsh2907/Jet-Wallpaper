@@ -1,7 +1,6 @@
 package com.example.jetwallpaper.ui.presentation.screens.new_screen
 
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,7 +22,7 @@ import androidx.paging.compose.LazyPagingItems
 import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.ui.presentation.screens.search_screen.WallpaperItem
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
-import com.example.jetwallpaper.ui.theme.Violet
+import com.example.jetwallpaper.ui.theme.UiColors
 import com.example.jetwallpaper.ui.util.CustomLoading
 import kotlinx.coroutines.launch
 
@@ -92,7 +91,7 @@ fun NewScreen(
                     contentAlignment = Alignment.BottomCenter
                 ) {
                     CircularProgressIndicator(
-                        color = Violet
+                        color = UiColors.Violet
                     )
                 }
             }
