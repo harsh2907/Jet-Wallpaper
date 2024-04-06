@@ -1,4 +1,4 @@
-package com.example.jetwallpaper.ui.presentation.screens.search_screen
+package com.example.jetwallpaper.ui.presentation.screens.exploreScreen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
@@ -14,7 +14,10 @@ fun WallpaperItem(
     wallpaper: Wallpaper,
     onClick: (Wallpaper) -> Unit
 ) {
-   LoadImage(url = wallpaper.thumbnail, modifier = Modifier.clickable { onClick(wallpaper) })
+   LoadImage(
+       url = wallpaper.thumbnail,
+       modifier = Modifier.clickable { onClick(wallpaper) }
+   )
 }
 
 

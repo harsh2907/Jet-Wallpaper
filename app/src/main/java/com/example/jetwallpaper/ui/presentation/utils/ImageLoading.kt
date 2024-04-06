@@ -1,8 +1,8 @@
 package com.example.jetwallpaper.ui.presentation.utils
 
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -29,6 +30,8 @@ fun LoadImage(
 ) {
     val context = LocalContext.current
     var showShimmer by remember { mutableStateOf(false) }
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+    val cardHeight=  (screenHeight*0.35).dp
 
     val request = ImageRequest
         .Builder(context)
@@ -48,9 +51,9 @@ fun LoadImage(
             }
         },
         modifier = Modifier
-            .height(300.dp)
+            .heightIn(max = cardHeight)
             .padding(12.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(ShapeDefaults.Medium)
             .placeholder(
                 visible = showShimmer,
                 color = Color.DarkGray,

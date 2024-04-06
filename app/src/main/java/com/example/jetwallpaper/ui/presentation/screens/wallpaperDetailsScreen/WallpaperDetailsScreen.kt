@@ -1,28 +1,34 @@
-package com.example.jetwallpaper.ui.presentation.screens.details_screen
+package com.example.jetwallpaper.ui.presentation.screens.wallpaperDetailsScreen
 
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Landscape
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -39,23 +45,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.jetwallpaper.domain.models.Wallpaper
+import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
 import com.example.jetwallpaper.ui.presentation.utils.WallpaperUtils
 import com.example.jetwallpaper.ui.presentation.utils.bounceClick
 import com.example.jetwallpaper.ui.presentation.utils.openUrl
 import com.example.jetwallpaper.ui.presentation.utils.parseSize
 import com.example.jetwallpaper.ui.presentation.utils.shareUrl
-import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.placeholder
-import com.google.accompanist.placeholder.shimmer
+import com.example.jetwallpaper.ui.theme.UiColors
+import com.example.jetwallpaper.ui.util.CustomLoading
 import kotlinx.coroutines.launch
 
 
@@ -63,44 +69,69 @@ import kotlinx.coroutines.launch
 @Composable
 fun DetailsScreen(
     uiEvent: UiEvent,
-    currentWallpaper: Wallpaper?,
+    wallpaperDetailsState: WallpaperDetailsState,
     saveWallpaper: (Wallpaper) -> Unit,
     navigateToFullScreen: (String) -> Unit,
-    onEvent: (UiEvent) -> Unit
+    onEvent: (UiEvent) -> Unit,
+    reloadWallpaper: () -> Unit
 ) {
 
+    val context = LocalContext.current as Activity
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+    val iconsRowHeight = remember { (screenHeight * 0.08).dp }
+    var showShimmer by remember { mutableStateOf(true) }
 
-    currentWallpaper?.let { wallpaper ->
+    val sheetSize by animateDpAsState(
+        targetValue = if (showShimmer) 0.dp else BottomSheetDefaults.SheetPeekHeight + iconsRowHeight,
+        label = "sheet size"
+    )
 
-        val context = LocalContext.current as Activity
-        val scope = rememberCoroutineScope()
-        val scaffoldState = rememberBottomSheetScaffoldState()
-        val snackbarHostState = remember { SnackbarHostState() }
-
+    LaunchedEffect(key1 = uiEvent) {
         when (uiEvent) {
             is UiEvent.ShowSnackBar -> {
-                LaunchedEffect(key1 = true) {
-                    scope.launch {
-                        val action = snackbarHostState.showSnackbar(
-                            message = uiEvent.message,
-                            actionLabel = uiEvent.action,
-                            duration = SnackbarDuration.Long
-                        )
-                        if (action == SnackbarResult.ActionPerformed) {
-
-                        }
-                    }
+                val action = snackbarHostState.showSnackbar(
+                    message = uiEvent.message,
+                    actionLabel = uiEvent.action,
+                    duration = SnackbarDuration.Long
+                )
+                if (action == SnackbarResult.ActionPerformed) {
+                    reloadWallpaper()
                 }
             }
 
             is UiEvent.Idle -> Unit
         }
+    }
+
+    LaunchedEffect(wallpaperDetailsState) {
+        when {
+
+            wallpaperDetailsState.isLoading -> showShimmer = true
+
+            wallpaperDetailsState.error.isNotEmpty() -> {
+                onEvent(
+                    UiEvent.ShowSnackBar(wallpaperDetailsState.error, "Retry")
+                )
+                showShimmer = false
+            }
+
+        }
+    }
 
 
-        BottomSheetScaffold(
-            scaffoldState = scaffoldState,
-            sheetContent = {
-                BottomSheetIcons(
+
+
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetContainerColor = UiColors.BottomNavColor,
+        sheetPeekHeight = sheetSize,
+        sheetContent = {
+            wallpaperDetailsState.wallpaper?.let { wallpaper ->
+                BottomSheetIconsRow(
+                    rowHeight = iconsRowHeight,
                     wallpaper = wallpaper,
                     onDownload = { imageUrl, imageId ->
                         scope.launch {
@@ -140,10 +171,13 @@ fun DetailsScreen(
                         context.shareUrl(it)
                     }
                 )
-                Spacer(
+
+                HorizontalDivider(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(12.dp)
                 )
+
                 Text(
                     text = "Views : ${wallpaper.views}",
                     fontWeight = FontWeight.Medium,
@@ -164,13 +198,26 @@ fun DetailsScreen(
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(12.dp)
                 )
-            },
-            sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-            containerColor = if (isSystemInDarkTheme()) Color.Black else MaterialTheme.colorScheme.background
+            }
+        },
+        sheetShape = ShapeDefaults.Medium,
+        containerColor = if (isSystemInDarkTheme()) Color.Black else MaterialTheme.colorScheme.background
+    ) {
+        AnimatedVisibility(
+            visible = showShimmer,
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                CustomLoading()
+            }
+        }
 
-
-            var showShimmer by remember { mutableStateOf(false) }
+        wallpaperDetailsState.wallpaper?.let { wallpaper ->
 
             AsyncImage(
                 model = ImageRequest.Builder(context)
@@ -179,15 +226,10 @@ fun DetailsScreen(
                     .build(),
                 contentDescription = wallpaper.id,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .placeholder(
-                        visible = showShimmer,
-                        color = Color.DarkGray,
-                        highlight = PlaceholderHighlight.shimmer(highlightColor = Color.LightGray)
-                    ),
+                    .fillMaxSize(),
                 contentScale = ContentScale.Fit,
-                onState = {state ->
-                    showShimmer = when ( state) {
+                onState = { state ->
+                    showShimmer = when (state) {
                         is AsyncImagePainter.State.Success -> false
                         is AsyncImagePainter.State.Error -> {
                             onEvent(
@@ -196,7 +238,7 @@ fun DetailsScreen(
                                     action = "Retry"
                                 )
                             )
-                            true
+                            false
                         }
 
                         else -> true
@@ -206,11 +248,12 @@ fun DetailsScreen(
 
         }
     }
-
 }
 
+
 @Composable
-fun BottomSheetIcons(
+fun BottomSheetIconsRow(
+    rowHeight: Dp,
     wallpaper: Wallpaper,
     onDownload: (String, String) -> Unit,
     onSetFavourite: (Wallpaper) -> Unit,
@@ -221,7 +264,7 @@ fun BottomSheetIcons(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .height(rowHeight),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -244,7 +287,7 @@ fun BottomSheetIcons(
                 }
         )
         Icon(
-            imageVector = Icons.Default.OpenInNew,
+            imageVector = Icons.AutoMirrored.Filled.OpenInNew,
             contentDescription = null,
             modifier = Modifier
                 .size(50.dp)
@@ -252,7 +295,6 @@ fun BottomSheetIcons(
                 .bounceClick {
                     onOpenBrowser(wallpaper.url)
                 }
-
         )
         Icon(
             imageVector = Icons.Default.Landscape,

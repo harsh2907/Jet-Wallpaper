@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import com.example.jetwallpaper.data.local.WallpaperDatabase
 import com.example.jetwallpaper.data.network.WallpaperResponse
-import com.example.jetwallpaper.data.repository.WallpaperRepositoryImpl
-import com.example.jetwallpaper.domain.repository.WallpaperRepository
+import com.example.jetwallpaper.data.repository.WallpaperApiRepositoryImpl
+import com.example.jetwallpaper.data.repository.WallpaperDatabaseRepositoryImpl
+import com.example.jetwallpaper.domain.repository.WallpaperApiRepository
 import com.example.jetwallpaper.data.utils.Constants
+import com.example.jetwallpaper.domain.repository.WallpaperDatabaseRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,7 +40,12 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRepository(api: WallpaperResponse, db: WallpaperDatabase): WallpaperRepository =
-        WallpaperRepositoryImpl(api, db.dao())
+    fun provideWallpaperApiRepository(api: WallpaperResponse ): WallpaperApiRepository =
+        WallpaperApiRepositoryImpl(api)
+
+    @Singleton
+    @Provides
+    fun provideWallpaperDatabaseRepository( db: WallpaperDatabase): WallpaperDatabaseRepository =
+        WallpaperDatabaseRepositoryImpl(db.dao())
 
 }

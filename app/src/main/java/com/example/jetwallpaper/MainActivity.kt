@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.example.jetwallpaper.ui.presentation.screens.main.ErrorComponent
-import com.example.jetwallpaper.ui.presentation.screens.main.JetWallpaperNavScreen
+import com.example.jetwallpaper.ui.presentation.screens.main.MainScreen
 import com.example.jetwallpaper.ui.theme.JetWallpaperTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -70,12 +70,14 @@ class MainActivity : ComponentActivity() {
                     LifecycleResumeEffect(key1 = Unit) {
                         requestPermission.launchMultiplePermissionRequest()
 
+                        requestPermission.permissions.map { ps ->
+                            hasPermission = ps.status.isGranted
+                        }
+
                         onPauseOrDispose {  }
                     }
 
-                    requestPermission.permissions.map { ps ->
-                        hasPermission = ps.status.isGranted
-                    }
+
 
                     AnimatedContent(
                         targetState = hasPermission,
@@ -83,10 +85,10 @@ class MainActivity : ComponentActivity() {
                             (slideInVertically() + fadeIn())
                                 .togetherWith(slideOutVertically() + fadeOut())
                         },
-                        label = ""
+                        label = "main screen"
                     ) { targetState ->
                         if (targetState) {
-                            JetWallpaperNavScreen()
+                            MainScreen()
                         } else {
                             ErrorComponent(
                                 message = "Storage permission is required for downloading wallpapers." +

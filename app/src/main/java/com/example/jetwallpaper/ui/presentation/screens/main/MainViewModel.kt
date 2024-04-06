@@ -1,4 +1,4 @@
-package com.example.jetwallpaper.ui.presentation.viewmodel
+package com.example.jetwallpaper.ui.presentation.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,7 +6,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.jetwallpaper.data.utils.Constants
 import com.example.jetwallpaper.domain.models.Wallpaper
-import com.example.jetwallpaper.domain.repository.WallpaperRepository
+import com.example.jetwallpaper.domain.repository.WallpaperApiRepository
+import com.example.jetwallpaper.domain.repository.WallpaperDatabaseRepository
 import com.example.jetwallpaper.ui.presentation.utils.WallpapersScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,8 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: WallpaperRepository
+    private val wallpaperApiRepository: WallpaperApiRepository,
+    private val wallpaperDatabaseRepository: WallpaperDatabaseRepository,
 ) : ViewModel() {
 
     val searchPager:Flow<PagingData<Wallpaper>>
@@ -65,13 +67,17 @@ class MainViewModel @Inject constructor(
     private val _savedWallpapers = MutableStateFlow(WallpapersScreenState())
     val savedWallpapers = _savedWallpapers.asStateFlow()
 
-    private fun searchWallpaper(query: String): Flow<PagingData<Wallpaper>> {
-      return repository.getSearchedWallpapers(query)
+    private fun searchWallpaper(
+        query: String,
+        sortingParams:String = Constants.SortingParams.popular
+    ): Flow<PagingData<Wallpaper>> {
+      return wallpaperApiRepository.getSearchedWallpapers(query,sortingParams)
     }
 
     private fun loadSavedWallpapers() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getFavouriteWallpapers().collectLatest { wallpapers ->
+            wallpaperDatabaseRepository.getFavouriteWallpapers()
+                .collectLatest { wallpapers ->
                 _savedWallpapers.value = savedWallpapers.value.copy(
                     wallpapers = wallpapers,
                     isLoading = false,
@@ -83,13 +89,13 @@ class MainViewModel @Inject constructor(
 
     fun addWallpaper(wallpaper: Wallpaper){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.insertWallpaper(wallpaper)
+            wallpaperDatabaseRepository.insertWallpaper(wallpaper)
         }
     }
 
     fun deleteWallpaper(wallpaper: Wallpaper){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteWallpaper(wallpaper)
+            wallpaperDatabaseRepository.deleteWallpaper(wallpaper)
         }
     }
 
@@ -103,22 +109,18 @@ class MainViewModel @Inject constructor(
         onQueryChanged(UiAction.Search(query.trim()))
     }
 
-    companion object {
-        const val PAGE_SIZE = 12
-    }
-
 }
 
 sealed class UiEvent{
     data class ShowSnackBar(
         val message:String,
         val action:String?= null
-    ) :UiEvent()
+    ) : UiEvent()
 
-    data object Idle:UiEvent()
+    data object Idle: UiEvent()
 
 }
 
 sealed class UiAction{
-    data class Search(val query: String):UiAction()
+    data class Search(val query: String): UiAction()
 }

@@ -1,4 +1,4 @@
-package com.example.jetwallpaper.ui.presentation.screens.search_screen
+package com.example.jetwallpaper.ui.presentation.screens.exploreScreen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -24,7 +24,7 @@ import com.example.jetwallpaper.R
 import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.ui.presentation.screens.components.LazyWallpaperGrid
 import com.example.jetwallpaper.ui.presentation.screens.components.CustomSearchBar
-import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
+import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
 import com.example.jetwallpaper.ui.util.CustomLoading
 
 @Composable

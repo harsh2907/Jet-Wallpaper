@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.jetwallpaper.ui.presentation.navigation.Screens
+import com.example.jetwallpaper.navigation.Screens
 import com.example.jetwallpaper.ui.theme.UiColors
 
 sealed class BottomNavItem(val title: String, val icon: ImageVector, val route: String) {
@@ -40,47 +40,53 @@ val bottomNavItems = listOf(
 )
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun WallpaperBottomNavigationBar(navController: NavHostController) {
 
-    NavigationBar(
-        modifier = Modifier
-            .graphicsLayer {
-                shape = ShapeDefaults.Medium.run {
-                    copy(
-                        topStart = topStart, topEnd = topEnd,
-                        CornerSize(0), CornerSize(0)
-                    )
-                }
-                clip = true
-            },
-        containerColor = UiColors.BottomNavColor,
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-        bottomNavItems.forEach { item ->
-            NavigationBarItem(
-                icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
-                label = { Text(text = item.title, fontWeight = FontWeight.Medium) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = UiColors.Pink,
-                    selectedTextColor = UiColors.Pink,
-                    unselectedIconColor = UiColors.Violet,
-                    unselectedTextColor = Color.White
-                ),
-                selected = currentRoute == item.route,
-                alwaysShowLabel = false,
-                onClick = {
+    val showBottomBar = bottomNavItems.map { it.route }
+            .contains(navBackStackEntry?.destination?.route)
 
-                    if (currentRoute != item.route) {
-                        navController.navigate(item.route) {
-                            //used pop up to avoid stack in bottom navigation
-                            popUpTo(navController.graph.findStartDestination().id)
-                            launchSingleTop = true
+    if(showBottomBar){
+        NavigationBar(
+            modifier = Modifier
+                .graphicsLayer {
+                    shape = ShapeDefaults.Medium.run {
+                        copy(
+                            topStart = topStart, topEnd = topEnd,
+                            CornerSize(0), CornerSize(0)
+                        )
+                    }
+                    clip = true
+                },
+            containerColor = UiColors.BottomNavColor,
+        ) {
+
+            bottomNavItems.forEach { item ->
+                NavigationBarItem(
+                    icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+                    label = { Text(text = item.title, fontWeight = FontWeight.Medium) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = UiColors.Pink,
+                        selectedTextColor = UiColors.Pink,
+                        unselectedIconColor = UiColors.Violet,
+                        unselectedTextColor = Color.White
+                    ),
+                    selected = currentRoute == item.route,
+                    alwaysShowLabel = false,
+                    onClick = {
+
+                        if (currentRoute != item.route) {
+                            navController.navigate(item.route) {
+                                //used pop up to avoid stack in bottom navigation
+                                popUpTo(navController.graph.findStartDestination().id)
+                                launchSingleTop = true
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

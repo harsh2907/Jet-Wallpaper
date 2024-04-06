@@ -22,6 +22,6 @@ interface WallpaperResponse {
     suspend fun getWallpaperDetails(
         @Path("id") id: String,
         @Query("apikey") apiKey:String = Constants.API_KEY
-    ): WallpaperDetailsDTO
+    ): WallpaperDetailsDTO?
 
 }

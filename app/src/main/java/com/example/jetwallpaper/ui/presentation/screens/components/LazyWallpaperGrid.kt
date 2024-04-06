@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.example.jetwallpaper.domain.models.Wallpaper
-import com.example.jetwallpaper.ui.presentation.screens.search_screen.WallpaperItem
-import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
+import com.example.jetwallpaper.ui.presentation.screens.exploreScreen.WallpaperItem
+import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
 import com.example.jetwallpaper.ui.theme.UiColors
 
 @Composable

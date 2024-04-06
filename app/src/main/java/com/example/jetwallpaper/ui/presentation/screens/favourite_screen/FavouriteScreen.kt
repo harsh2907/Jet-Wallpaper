@@ -2,28 +2,20 @@ package com.example.jetwallpaper.ui.presentation.screens.favourite_screen
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.paging.compose.LazyPagingItems
 import com.example.jetwallpaper.domain.models.Wallpaper
-import com.example.jetwallpaper.ui.presentation.navigation.navigateToDetails
-import com.example.jetwallpaper.ui.presentation.screens.search_screen.NoResultFound
-import com.example.jetwallpaper.ui.presentation.screens.search_screen.WallpaperItem
+import com.example.jetwallpaper.ui.presentation.screens.exploreScreen.NoResultFound
+import com.example.jetwallpaper.ui.presentation.screens.exploreScreen.WallpaperItem
 import com.example.jetwallpaper.ui.presentation.utils.WallpapersScreenState
-import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel
-import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
+import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
 import com.example.jetwallpaper.ui.util.CustomLoading
 import kotlinx.coroutines.launch
 
@@ -70,14 +62,16 @@ fun FavouriteScreen(
                 }
 
                 targetState.error.isNotBlank() -> {
-                    onEvent(UiEvent.ShowSnackBar(
+                    onEvent(
+                        UiEvent.ShowSnackBar(
                         message = targetState.error,
                         action = "OK"
                     ))
                 }
 
                 targetState.wallpapers.isEmpty() -> {
-                    onEvent(UiEvent.ShowSnackBar(
+                    onEvent(
+                        UiEvent.ShowSnackBar(
                         message =  "No wallpapers found. Try saving them from other sections.",
                         action = "OK"
                     ))
