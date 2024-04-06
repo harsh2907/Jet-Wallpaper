@@ -1,10 +1,10 @@
 package com.example.jetwallpaper.ui.presentation.navigation
 
 sealed class Screens(val route:String) {
-    object Search: Screens("Search")
-    object New: Screens("New")
-    object Favourite: Screens("Favourite")
-    object Details: Screens("Details")
-    object FullScreen: Screens("FullScreen")
+    data object Search: Screens("Search")
+    data object New: Screens("New")
+    data object Favourite: Screens("Favourite")
+    data object Details: Screens("Details")
+    data object FullScreen: Screens("FullScreen")
 }
 

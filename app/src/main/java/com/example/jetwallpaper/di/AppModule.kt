@@ -6,7 +6,7 @@ import com.example.jetwallpaper.data.local.WallpaperDatabase
 import com.example.jetwallpaper.data.network.WallpaperResponse
 import com.example.jetwallpaper.data.repository.WallpaperRepositoryImpl
 import com.example.jetwallpaper.domain.repository.WallpaperRepository
-import com.example.jetwallpaper.domain.utils.Constants
+import com.example.jetwallpaper.data.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

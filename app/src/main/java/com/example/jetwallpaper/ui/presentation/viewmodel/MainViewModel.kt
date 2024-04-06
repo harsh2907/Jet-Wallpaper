@@ -2,16 +2,25 @@ package com.example.jetwallpaper.ui.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.*
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.jetwallpaper.data.utils.Constants
 import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.domain.repository.WallpaperRepository
-import com.example.jetwallpaper.domain.utils.Constants
 import com.example.jetwallpaper.ui.presentation.utils.WallpapersScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,10 +57,10 @@ class MainViewModel @Inject constructor(
 
     var currentWallpaper: Wallpaper? = null
 
-    private val _uiEvent = Channel<UiEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
-    val newPager = repository.getNewWallpapers().cachedIn(viewModelScope)
+  //  val newPager = repository.getNewWallpapers().cachedIn(viewModelScope)
 
     private val _savedWallpapers = MutableStateFlow(WallpapersScreenState())
     val savedWallpapers = _savedWallpapers.asStateFlow()
@@ -86,7 +95,7 @@ class MainViewModel @Inject constructor(
 
     fun sendUiEvent(event: UiEvent){
         viewModelScope.launch {
-            _uiEvent.send(event)
+            _uiEvent.emit(event)
         }
     }
 
@@ -95,7 +104,7 @@ class MainViewModel @Inject constructor(
     }
 
     companion object {
-        const val PAGE_SIZE = 24
+        const val PAGE_SIZE = 12
     }
 
 }
@@ -106,7 +115,7 @@ sealed class UiEvent{
         val action:String?= null
     ) :UiEvent()
 
-    object Idle:UiEvent()
+    data object Idle:UiEvent()
 
 }
 

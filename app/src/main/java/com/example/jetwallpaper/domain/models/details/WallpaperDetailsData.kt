@@ -2,7 +2,7 @@ package com.example.jetwallpaper.domain.models.details
 
 import com.example.jetwallpaper.domain.models.Wallpaper
 
-data class Data(
+data class WallpaperDetailsData(
     val category: String,
     val colors: List<String>,
     val created_at: String,
