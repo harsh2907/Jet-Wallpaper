@@ -1,6 +1,7 @@
 package com.example.jetwallpaper.ui.presentation.screens.search_screen
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,7 @@ import androidx.paging.compose.LazyPagingItems
 import com.example.jetwallpaper.R
 import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.ui.presentation.screens.components.LazyWallpaperGrid
-import com.example.jetwallpaper.ui.presentation.screens.main.CustomSearchBar
+import com.example.jetwallpaper.ui.presentation.screens.components.CustomSearchBar
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
 import com.example.jetwallpaper.ui.util.CustomLoading
 
@@ -82,22 +83,19 @@ fun SearchScreen(
                 }
 
                 else -> {
-                    AnimatedContent(
-                        targetState = wallpaperState.itemCount,
-                        label = "Wallpaper grid"
-                    ) { itemCount ->
-                        if (itemCount <= 0) {
-                            NoResultFound()
-                        } else {
-                            LazyWallpaperGrid(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(padding),
-                                wallpaperState = wallpaperState,
-                                onClick = navigateToDetails,
-                                onEvent = onEvent
-                            )
-                        }
+                    AnimatedVisibility(visible = wallpaperState.itemCount==0) {
+                        NoResultFound()
+                    }
+
+                    AnimatedVisibility(visible = wallpaperState.itemCount > 0) {
+                        LazyWallpaperGrid(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(padding),
+                            wallpaperState = wallpaperState,
+                            onClick = navigateToDetails,
+                            onEvent = onEvent
+                        )
                     }
                 }
             }

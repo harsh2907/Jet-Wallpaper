@@ -1,10 +1,12 @@
-package com.example.jetwallpaper.ui.presentation.screens.main
+package com.example.jetwallpaper.ui.presentation.screens.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -51,14 +53,15 @@ fun CustomSearchBar(
         colors = TextFieldDefaults.colors(
             cursorColor = UiColors.Violet,
             unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent
+            focusedIndicatorColor = Color.Transparent,
+            focusedContainerColor = UiColors.BottomNavColor,
+            unfocusedContainerColor = UiColors.BottomNavColor,
         ),
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .clip(RoundedCornerShape(20.dp))
-
+            .padding(8.dp),
+        shape = CircleShape
     )
 
 }

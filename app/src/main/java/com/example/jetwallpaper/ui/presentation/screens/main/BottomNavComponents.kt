@@ -26,7 +26,7 @@ import com.example.jetwallpaper.ui.theme.UiColors
 
 sealed class BottomNavItem(val title: String, val icon: ImageVector, val route: String) {
 
-    data object Popular : BottomNavItem("Search", Icons.Outlined.Search, Screens.Search.route)
+    data object Explore : BottomNavItem("Explore", Icons.Outlined.Search, Screens.Search.route)
     data object New : BottomNavItem("New", Icons.Outlined.LocalFireDepartment, Screens.New.route)
     data object Favourite :
         BottomNavItem("Favourite", Icons.Outlined.Favorite, Screens.Favourite.route)
@@ -34,7 +34,7 @@ sealed class BottomNavItem(val title: String, val icon: ImageVector, val route: 
 }
 
 val bottomNavItems = listOf(
-    BottomNavItem.Popular,
+    BottomNavItem.Explore,
     BottomNavItem.New,
     BottomNavItem.Favourite
 )
@@ -84,5 +84,3 @@ fun BottomNavigationBar(navController: NavHostController) {
         }
     }
 }
-
-//TODO 1 : Change colors of selected and icon color
