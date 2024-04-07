@@ -11,7 +11,11 @@ import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,22 +26,32 @@ class NewWallpapersViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    private val sortingParam = MutableStateFlow(Constants.SortingParams.views)
+
+
     lateinit var wallpaperPager: Flow<PagingData<Wallpaper>>
 
-
     init {
-        getWallpapers()
+        viewModelScope.launch {
+            sortingParam.collectLatest {param->
+                getWallpapers(param)
+            }
+        }
     }
 
 
     fun getWallpapers(
-        sortingParams: String = Constants.SortingParams.popular
+        sortingParams: String = Constants.SortingParams.views
     ) {
         wallpaperPager = wallpaperApiRepository
             .getNewWallpapers(sortingParams)
             .cachedIn(viewModelScope)
     }
 
+    fun getSortingParam() = sortingParam.asStateFlow()
+    fun setSortingParam(param:String){
+        sortingParam.update { param }
+    }
 
     fun sendUiEvent(event: UiEvent) {
         viewModelScope.launch {

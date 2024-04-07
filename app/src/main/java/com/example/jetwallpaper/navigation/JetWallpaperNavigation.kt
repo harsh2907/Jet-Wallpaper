@@ -15,15 +15,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.jetwallpaper.ui.presentation.screens.wallpaperDetailsScreen.DetailsScreen
-import com.example.jetwallpaper.ui.presentation.screens.wallpaperDetailsScreen.FullScreen
 import com.example.jetwallpaper.ui.presentation.screens.exploreScreen.SearchScreen
 import com.example.jetwallpaper.ui.presentation.screens.favourite_screen.FavouriteScreen
-import com.example.jetwallpaper.ui.presentation.screens.newWallpapersScreen.NewWallpaperScreen
-import com.example.jetwallpaper.ui.presentation.screens.newWallpapersScreen.NewWallpapersViewModel
-import com.example.jetwallpaper.ui.presentation.screens.wallpaperDetailsScreen.WallpaperDetailsViewModel
 import com.example.jetwallpaper.ui.presentation.screens.main.MainViewModel
 import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
+import com.example.jetwallpaper.ui.presentation.screens.newWallpapersScreen.NewWallpaperScreen
+import com.example.jetwallpaper.ui.presentation.screens.newWallpapersScreen.NewWallpapersViewModel
+import com.example.jetwallpaper.ui.presentation.screens.wallpaperDetailsScreen.DetailsScreen
+import com.example.jetwallpaper.ui.presentation.screens.wallpaperDetailsScreen.FullScreen
+import com.example.jetwallpaper.ui.presentation.screens.wallpaperDetailsScreen.WallpaperDetailsViewModel
 
 @Composable
 fun JetWallpaperNavigation(
@@ -69,13 +69,18 @@ fun JetWallpaperNavigation(
             val newWallpapersViewModel: NewWallpapersViewModel = hiltViewModel()
 
             val uiEvent by
-                newWallpapersViewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
+            newWallpapersViewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
+
+            val selectedSortingParam by
+                newWallpapersViewModel.getSortingParam().collectAsStateWithLifecycle()
 
             val wallpaperState = newWallpapersViewModel.wallpaperPager.collectAsLazyPagingItems()
 
             NewWallpaperScreen(
                 uiEvent = uiEvent,
                 wallpaperState = wallpaperState,
+                selectedSortingParam = selectedSortingParam,
+                onSortingParamChange = newWallpapersViewModel::setSortingParam,
                 onEvent = { event ->
                     newWallpapersViewModel.sendUiEvent(event)
                 },
@@ -107,12 +112,12 @@ fun JetWallpaperNavigation(
         composable(
             route = Screens.Details.route,
             arguments = listOf(
-                navArgument("wallpaperId"){
+                navArgument("wallpaperId") {
                     type = NavType.StringType
                 }
             )
         ) {
-            val detailsViewModel:WallpaperDetailsViewModel = hiltViewModel()
+            val detailsViewModel: WallpaperDetailsViewModel = hiltViewModel()
 
             val uiEvent by detailsViewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
             val wallpaperDetailsState by detailsViewModel.wallpaperDetailsState.collectAsStateWithLifecycle()
@@ -138,7 +143,7 @@ fun JetWallpaperNavigation(
 }
 
 fun NavHostController.navigateToDetails(
-    wallpaperId:String
+    wallpaperId: String
 ) {
     navigate(Screens.Details.passWallpaperId(wallpaperId)) {
         launchSingleTop = true

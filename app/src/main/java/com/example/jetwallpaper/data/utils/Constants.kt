@@ -10,8 +10,17 @@ object Constants {
     const val BASE_URL = "https://wallhaven.cc"
     const val PAGE_SIZE = 12
 
+    //TODO: Change SortingParam to Enum
     object SortingParams{
-        const val popular = "views"
+        const val views = "views"
+        const val latest = "date_added"
+        const val relevant ="relevance"
+        const val random = "random"
+        const val favourites = "favorites"
+        const val top = "toplist"
+
+        val entries = listOf(views, latest, relevant, random, favourites,top)
+
     }
 
 

@@ -69,7 +69,7 @@ class MainViewModel @Inject constructor(
 
     private fun searchWallpaper(
         query: String,
-        sortingParams:String = Constants.SortingParams.popular
+        sortingParams:String = Constants.SortingParams.views
     ): Flow<PagingData<Wallpaper>> {
       return wallpaperApiRepository.getSearchedWallpapers(query,sortingParams)
     }
