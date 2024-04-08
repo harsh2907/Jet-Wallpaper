@@ -26,7 +26,7 @@ import com.example.jetwallpaper.ui.theme.UiColors
 
 sealed class BottomNavItem(val title: String, val icon: ImageVector, val route: String) {
 
-    data object Explore : BottomNavItem("Explore", Icons.Outlined.Search, Screens.Search.route)
+    data object Explore : BottomNavItem("Explore", Icons.Outlined.Search, Screens.Explore.route)
     data object New : BottomNavItem("New", Icons.Outlined.LocalFireDepartment, Screens.New.route)
     data object Favourite :
         BottomNavItem("Favourite", Icons.Outlined.Favorite, Screens.Favourite.route)

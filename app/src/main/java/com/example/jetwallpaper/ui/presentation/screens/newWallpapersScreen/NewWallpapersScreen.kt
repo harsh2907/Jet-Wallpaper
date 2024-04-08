@@ -41,7 +41,7 @@ fun NewWallpaperScreen(
     wallpaperState: LazyPagingItems<Wallpaper>,
     selectedSortingParam: String,
     onSortingParamChange: (String) -> Unit,
-    navigateToDetails: (Wallpaper) -> Unit,
+    navigateToDetails: (id:String) -> Unit,
     onEvent: (UiEvent) -> Unit
 ) {
 

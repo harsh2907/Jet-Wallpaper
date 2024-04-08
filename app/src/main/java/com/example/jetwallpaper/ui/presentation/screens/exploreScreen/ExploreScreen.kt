@@ -22,8 +22,8 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.example.jetwallpaper.R
 import com.example.jetwallpaper.domain.models.Wallpaper
-import com.example.jetwallpaper.ui.presentation.screens.components.LazyWallpaperGrid
 import com.example.jetwallpaper.ui.presentation.screens.components.CustomSearchBar
+import com.example.jetwallpaper.ui.presentation.screens.components.LazyWallpaperGrid
 import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
 import com.example.jetwallpaper.ui.util.CustomLoading
 
@@ -33,7 +33,7 @@ fun SearchScreen(
     uiEvent: UiEvent,
     onEvent: (UiEvent) -> Unit,
     updateSearchList: (String) -> Unit,
-    navigateToDetails: (Wallpaper) -> Unit
+    navigateToDetails: (id: String) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -83,7 +83,7 @@ fun SearchScreen(
                 }
 
                 else -> {
-                    AnimatedVisibility(visible = wallpaperState.itemCount==0) {
+                    AnimatedVisibility(visible = wallpaperState.itemCount == 0) {
                         NoResultFound()
                     }
 

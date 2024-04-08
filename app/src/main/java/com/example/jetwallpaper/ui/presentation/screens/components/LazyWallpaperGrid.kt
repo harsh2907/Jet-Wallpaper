@@ -21,7 +21,7 @@ fun LazyWallpaperGrid(
     modifier:Modifier = Modifier,
     columns:GridCells = GridCells.Fixed(2),
     wallpaperState:LazyPagingItems<Wallpaper>,
-    onClick:(Wallpaper)->Unit,
+    onClick:(wallpaperId:String)->Unit,
     onEvent: (UiEvent)->Unit
 ) {
     LazyVerticalGrid(
@@ -31,7 +31,7 @@ fun LazyWallpaperGrid(
         items(wallpaperState.itemCount) { index ->
             wallpaperState[index]?.let {
                 WallpaperItem(wallpaper = it, onClick = { wallpaper ->
-                    onClick(wallpaper)
+                    onClick(wallpaper.id)
                 })
             }
         }

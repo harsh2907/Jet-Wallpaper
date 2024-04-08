@@ -6,18 +6,21 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetwallpaper.ui.presentation.screens.exploreScreen.SearchScreen
 import com.example.jetwallpaper.ui.presentation.screens.favourite_screen.FavouriteScreen
-import com.example.jetwallpaper.ui.presentation.screens.main.MainViewModel
+import com.example.jetwallpaper.ui.presentation.screens.main.ExploreViewModel
 import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
 import com.example.jetwallpaper.ui.presentation.screens.newWallpapersScreen.NewWallpaperScreen
 import com.example.jetwallpaper.ui.presentation.screens.newWallpapersScreen.NewWallpapersViewModel
@@ -30,7 +33,6 @@ fun JetWallpaperNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: MainViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -42,23 +44,19 @@ fun JetWallpaperNavigation(
         popExitTransition = { slideOutHorizontally { it } + fadeOut() },
     ) {
 
-        composable(route = Screens.Search.route) {
+        composable(route = Screens.Explore.route) {
+            val exploreViewModel: ExploreViewModel = hiltViewModel()
 
-            val wallpaperState = viewModel.searchPager.collectAsLazyPagingItems()
-            val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
+            val wallpaperState = exploreViewModel.searchPager.collectAsLazyPagingItems()
+            val uiEvent by exploreViewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
 
             SearchScreen(
                 wallpaperState = wallpaperState,
                 uiEvent = uiEvent,
-                onEvent = { event ->
-                    viewModel.sendUiEvent(event)
-                },
+                onEvent = exploreViewModel::sendUiEvent,
+                navigateToDetails = navController::navigateToDetails,
                 updateSearchList = { query ->
-                    viewModel.updateSearchList(query, viewModel.accept)
-                },
-                navigateToDetails = { wallpaper ->
-                    viewModel.currentWallpaper = wallpaper
-                    navController.navigateToDetails(wallpaperId = wallpaper.id)
+                    exploreViewModel.updateSearchList(query, exploreViewModel.accept)
                 }
             )
 
@@ -72,7 +70,7 @@ fun JetWallpaperNavigation(
             newWallpapersViewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
 
             val selectedSortingParam by
-                newWallpapersViewModel.getSortingParam().collectAsStateWithLifecycle()
+            newWallpapersViewModel.getSortingParam().collectAsStateWithLifecycle()
 
             val wallpaperState = newWallpapersViewModel.wallpaperPager.collectAsLazyPagingItems()
 
@@ -81,40 +79,49 @@ fun JetWallpaperNavigation(
                 wallpaperState = wallpaperState,
                 selectedSortingParam = selectedSortingParam,
                 onSortingParamChange = newWallpapersViewModel::setSortingParam,
-                onEvent = { event ->
-                    newWallpapersViewModel.sendUiEvent(event)
-                },
-                navigateToDetails = { wallpaper ->
-                    viewModel.currentWallpaper = wallpaper
-                    navController.navigateToDetails(wallpaperId = wallpaper.id)
-                }
+                onEvent = newWallpapersViewModel::sendUiEvent,
+                navigateToDetails = navController::navigateToDetails
             )
 
         }
-        composable(route = Screens.Favourite.route) {
-            val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
 
-            val savedWallpaperState by viewModel.savedWallpapers
+        composable(route = Screens.Favourite.route) { backstack ->
+            val parentEntry = remember(backstack) {
+                navController.getBackStackEntry(Screens.Explore.route)
+            }
+            val exploreViewModel: ExploreViewModel = hiltViewModel(parentEntry)
+
+            val uiEvent by exploreViewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
+
+            val savedWallpaperState by exploreViewModel.savedWallpapers
                 .collectAsStateWithLifecycle()
 
             FavouriteScreen(
                 uiEvent = uiEvent,
                 savedWallpaperState = savedWallpaperState,
-                onEvent = viewModel::sendUiEvent,
-                navigateToDetails = { wallpaper ->
-                    viewModel.currentWallpaper = wallpaper
-                    navController.navigateToDetails(wallpaperId = wallpaper.id)
-                }
+                onEvent = exploreViewModel::sendUiEvent,
+                navigateToDetails = navController::navigateToDetails,
+                onLongClick = exploreViewModel::deleteWallpaper
             )
 
         }
 
+        wallpaperDetails(navController)
+
+    }
+}
+
+fun NavGraphBuilder.wallpaperDetails(
+    navController: NavHostController
+) {
+    navigation(
+        route = Screens.WallpaperDetails.route,
+        startDestination = Screens.WallpaperDetails.Details.route
+    ) {
         composable(
-            route = Screens.Details.route,
+            route = Screens.WallpaperDetails.Details.route,
             arguments = listOf(
-                navArgument("wallpaperId") {
-                    type = NavType.StringType
-                }
+                navArgument("wallpaperId") { type = NavType.StringType }
             )
         ) {
             val detailsViewModel: WallpaperDetailsViewModel = hiltViewModel()
@@ -125,27 +132,38 @@ fun JetWallpaperNavigation(
             DetailsScreen(
                 uiEvent = uiEvent,
                 wallpaperDetailsState = wallpaperDetailsState,
-                saveWallpaper = viewModel::addWallpaper,
-                navigateToFullScreen = { _ ->
-                    navController.navigate(Screens.FullScreen.route)
-                },
+                saveWallpaper = detailsViewModel::addWallpaper,
                 onEvent = detailsViewModel::sendUiEvent,
-                reloadWallpaper = detailsViewModel::reloadWallpaper
+                reloadWallpaper = detailsViewModel::reloadWallpaper,
+                navigateToFullScreen = { _ ->
+                    navController.navigate(Screens.WallpaperDetails.FullScreen.route)
+                }
             )
 
         }
 
-        composable(route = Screens.FullScreen.route) {
-            FullScreen(imageUrl = viewModel.currentWallpaper?.imageUrl)
-        }
 
+        composable(route = Screens.WallpaperDetails.FullScreen.route) { backstack ->
+
+            val parentEntry = remember(backstack) {
+                navController.getBackStackEntry(Screens.WallpaperDetails.Details.route)
+            }
+
+            val detailsViewModel: WallpaperDetailsViewModel = hiltViewModel(parentEntry)
+            val wallpaperState by
+            detailsViewModel.wallpaperDetailsState.collectAsStateWithLifecycle()
+
+            FullScreen(imageUrl = wallpaperState.wallpaper?.imageUrl)
+        }
     }
+
+
 }
 
 fun NavHostController.navigateToDetails(
     wallpaperId: String
 ) {
-    navigate(Screens.Details.passWallpaperId(wallpaperId)) {
+    navigate(Screens.WallpaperDetails.Details.passWallpaperId(wallpaperId)) {
         launchSingleTop = true
     }
 }

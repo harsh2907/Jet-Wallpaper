@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class ExploreViewModel @Inject constructor(
     private val wallpaperApiRepository: WallpaperApiRepository,
     private val wallpaperDatabaseRepository: WallpaperDatabaseRepository,
 ) : ViewModel() {
@@ -57,7 +57,6 @@ class MainViewModel @Inject constructor(
 
     }
 
-    var currentWallpaper: Wallpaper? = null
 
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -87,17 +86,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun addWallpaper(wallpaper: Wallpaper){
-        viewModelScope.launch(Dispatchers.IO) {
-            wallpaperDatabaseRepository.insertWallpaper(wallpaper)
-        }
-    }
-
-    fun deleteWallpaper(wallpaper: Wallpaper){
-        viewModelScope.launch(Dispatchers.IO) {
-            wallpaperDatabaseRepository.deleteWallpaper(wallpaper)
-        }
-    }
 
     fun sendUiEvent(event: UiEvent){
         viewModelScope.launch {
@@ -107,6 +95,12 @@ class MainViewModel @Inject constructor(
 
     fun updateSearchList(query: String,onQueryChanged:(UiAction)->Unit){
         onQueryChanged(UiAction.Search(query.trim()))
+    }
+
+    fun deleteWallpaper(wallpaper: Wallpaper){
+        viewModelScope.launch(Dispatchers.IO) {
+            wallpaperDatabaseRepository.deleteWallpaper(wallpaper)
+        }
     }
 
 }
