@@ -2,9 +2,13 @@ package com.example.jetwallpaper.ui.presentation.screens.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,16 +22,19 @@ import com.example.jetwallpaper.ui.theme.UiColors
 
 @Composable
 fun LazyWallpaperGrid(
-    modifier:Modifier = Modifier,
-    columns:GridCells = GridCells.Fixed(2),
-    wallpaperState:LazyPagingItems<Wallpaper>,
-    onClick:(wallpaperId:String)->Unit,
-    onEvent: (UiEvent)->Unit
+    modifier: Modifier = Modifier,
+    state: LazyGridState = rememberLazyGridState(),
+    columns: GridCells = GridCells.Fixed(2),
+    wallpaperState: LazyPagingItems<Wallpaper>,
+    onClick: (wallpaperId: String) -> Unit,
+    onEvent: (UiEvent) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = modifier,
-        columns = columns
+        columns = columns,
+        state = state
     ) {
+
         items(wallpaperState.itemCount) { index ->
             wallpaperState[index]?.let {
                 WallpaperItem(wallpaper = it, onClick = { wallpaper ->

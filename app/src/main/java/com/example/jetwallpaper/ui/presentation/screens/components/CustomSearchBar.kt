@@ -3,10 +3,8 @@ package com.example.jetwallpaper.ui.presentation.screens.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -16,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -26,6 +23,7 @@ import com.example.jetwallpaper.ui.theme.UiColors
 
 @Composable
 fun CustomSearchBar(
+    modifier: Modifier = Modifier,
     hint: String = "Search..",
     onSearch: (String) -> Unit
 ) {
@@ -60,7 +58,8 @@ fun CustomSearchBar(
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .then(modifier),
         shape = CircleShape
     )
 
