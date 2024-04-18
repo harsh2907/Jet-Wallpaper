@@ -86,10 +86,8 @@ fun JetWallpaperNavigation(
         }
 
         composable(route = Screens.Favourite.route) { backstack ->
-            val parentEntry = remember(backstack) {
-                navController.getBackStackEntry(Screens.Explore.route)
-            }
-            val exploreViewModel: ExploreViewModel = hiltViewModel(parentEntry)
+
+            val exploreViewModel: ExploreViewModel = hiltViewModel()
 
             val uiEvent by exploreViewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
 

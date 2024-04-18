@@ -41,7 +41,7 @@ fun NewWallpaperScreen(
     wallpaperState: LazyPagingItems<Wallpaper>,
     selectedSortingParam: String,
     onSortingParamChange: (String) -> Unit,
-    navigateToDetails: (id:String) -> Unit,
+    navigateToDetails: (id: String) -> Unit,
     onEvent: (UiEvent) -> Unit
 ) {
 
@@ -126,9 +126,9 @@ fun NewWallpaperScreen(
                     items = Constants.SortingParams.entries
                 ) { param ->
                     FilterChip(
-                        selected = selectedSortingParam == param,
-                        onClick = { onSortingParamChange(param) },
-                        label = { Text(text = param) },
+                        selected = param.paramName == selectedSortingParam,
+                        onClick = { onSortingParamChange(param.paramName) },
+                        label = { Text(text = param.getGeneralizedName()) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = Color.Transparent,
                             labelColor = UiColors.Violet,
@@ -137,7 +137,7 @@ fun NewWallpaperScreen(
                         shape = CircleShape,
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
-                            selected = selectedSortingParam == param,
+                            selected = selectedSortingParam == param.paramName,
                             selectedBorderColor = UiColors.HotPink,
                             borderColor = UiColors.Violet
                         )

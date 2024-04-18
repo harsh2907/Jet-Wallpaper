@@ -26,7 +26,7 @@ class NewWallpapersViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
-    private val sortingParam = MutableStateFlow(Constants.SortingParams.views)
+    private val sortingParam = MutableStateFlow(Constants.SortingParams.VIEWS.paramName)
 
 
     lateinit var wallpaperPager: Flow<PagingData<Wallpaper>>
@@ -41,7 +41,7 @@ class NewWallpapersViewModel @Inject constructor(
 
 
     fun getWallpapers(
-        sortingParams: String = Constants.SortingParams.views
+        sortingParams: String
     ) {
         wallpaperPager = wallpaperApiRepository
             .getNewWallpapers(sortingParams)

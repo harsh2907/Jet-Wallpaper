@@ -1,5 +1,7 @@
 package com.example.jetwallpaper.data.utils
 
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import com.example.jetwallpaper.BuildConfig
 
 
@@ -11,15 +13,18 @@ object Constants {
     const val PAGE_SIZE = 12
 
     //TODO: Change SortingParam to Enum
-    object SortingParams{
-        const val views = "views"
-        const val latest = "date_added"
-        const val relevant ="relevance"
-        const val random = "random"
-        const val favourites = "favorites"
-        const val top = "toplist"
+    enum class SortingParams(name:String){
+        VIEWS("views"),
+        LATEST("date_added"),
+        RELEVANT("relevant"),
+        RANDOM("random"),
+        FAVOURITES("favourites"),
+        TOP("toplist");
 
-        val entries = listOf(views, latest, relevant, random, favourites,top)
+        val paramName = name
+        fun getGeneralizedName():String{
+            return this.name.lowercase().capitalize(Locale.current)
+        }
 
     }
 
