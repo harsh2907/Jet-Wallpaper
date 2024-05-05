@@ -1,11 +1,13 @@
 package com.example.jetwallpaper.ui.presentation.screens.main
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -18,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -60,7 +63,8 @@ fun WallpaperBottomNavigationBar(navController: NavHostController) {
                     }
                     clip = true
                 },
-            containerColor = UiColors.BottomNavColor,
+            containerColor = if(isSystemInDarkTheme()) UiColors.BottomNavColor else MaterialTheme.colorScheme.surfaceContainer,
+            tonalElevation = 12.dp
         ) {
 
             bottomNavItems.forEach { item ->

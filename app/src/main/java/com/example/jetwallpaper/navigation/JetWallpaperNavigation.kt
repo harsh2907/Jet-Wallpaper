@@ -18,7 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.jetwallpaper.ui.presentation.screens.exploreScreen.SearchScreen
+import com.example.jetwallpaper.ui.presentation.screens.exploreScreen.ExploreScreen
 import com.example.jetwallpaper.ui.presentation.screens.favourite_screen.FavouriteScreen
 import com.example.jetwallpaper.ui.presentation.screens.main.ExploreViewModel
 import com.example.jetwallpaper.ui.presentation.screens.main.UiEvent
@@ -50,7 +50,7 @@ fun JetWallpaperNavigation(
             val wallpaperState = exploreViewModel.searchPager.collectAsLazyPagingItems()
             val uiEvent by exploreViewModel.uiEvent.collectAsStateWithLifecycle(initialValue = UiEvent.Idle)
 
-            SearchScreen(
+            ExploreScreen(
                 wallpaperState = wallpaperState,
                 uiEvent = uiEvent,
                 onEvent = exploreViewModel::sendUiEvent,
@@ -130,7 +130,7 @@ fun NavGraphBuilder.wallpaperDetails(
             DetailsScreen(
                 uiEvent = uiEvent,
                 wallpaperDetailsState = wallpaperDetailsState,
-                saveWallpaper = detailsViewModel::addWallpaper,
+                toggleFavourite = detailsViewModel::toggleFavourite,
                 onEvent = detailsViewModel::sendUiEvent,
                 reloadWallpaper = detailsViewModel::reloadWallpaper,
                 navigateToFullScreen = { _ ->
@@ -151,7 +151,7 @@ fun NavGraphBuilder.wallpaperDetails(
             val wallpaperState by
             detailsViewModel.wallpaperDetailsState.collectAsStateWithLifecycle()
 
-            FullScreen(imageUrl = wallpaperState.wallpaper?.imageUrl)
+            FullScreen(imageUrl = wallpaperState.savableWallpaper.wallpaper?.imageUrl)
         }
     }
 

@@ -16,17 +16,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.SnackbarDuration
@@ -43,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -70,7 +74,7 @@ import kotlinx.coroutines.launch
 fun DetailsScreen(
     uiEvent: UiEvent,
     wallpaperDetailsState: WallpaperDetailsState,
-    saveWallpaper: (Wallpaper) -> Unit,
+    toggleFavourite: (Wallpaper, Boolean) -> Unit,
     navigateToFullScreen: (String) -> Unit,
     onEvent: (UiEvent) -> Unit,
     reloadWallpaper: () -> Unit
@@ -126,58 +130,58 @@ fun DetailsScreen(
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
-        sheetContainerColor = UiColors.BottomNavColor,
+        sheetContainerColor = if (isSystemInDarkTheme()) UiColors.BottomNavColor else MaterialTheme.colorScheme.background,
         sheetPeekHeight = sheetSize,
         sheetContent = {
-            wallpaperDetailsState.wallpaper?.let { wallpaper ->
-                BottomSheetIconsRow(
-                    rowHeight = iconsRowHeight,
-                    wallpaper = wallpaper,
-                    onDownload = { imageUrl, imageId ->
-                        scope.launch {
-                            WallpaperUtils.saveBitmapToStorage(
-                                context = context,
-                                imageUrl = imageUrl,
-                                imageId = imageId,
-                                onSuccess = {
-                                    Toast.makeText(
-                                        context,
-                                        "Wallpaper saved successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                },
-                                onFailed = { exception ->
-                                    Log.e(
-                                        "Save Wallpaper",
-                                        exception.message,
-                                        exception
-                                    )
+            BottomSheetIconsRow(
+                rowHeight = iconsRowHeight,
+                savableWallpaper = wallpaperDetailsState.savableWallpaper,
+                onDownload = { imageUrl, imageId ->
+                    scope.launch {
+                        WallpaperUtils.saveBitmapToStorage(
+                            context = context,
+                            imageUrl = imageUrl,
+                            imageId = imageId,
+                            onSuccess = {
+                                Toast.makeText(
+                                    context,
+                                    "Wallpaper saved successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                            onFailed = { exception ->
+                                Log.e(
+                                    "Save Wallpaper",
+                                    exception.message,
+                                    exception
+                                )
 
-                                    Toast.makeText(
-                                        context,
-                                        "Failed to save wallpaper. Please try again",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            )
-                        }
-                    },
-                    onSetFavourite = saveWallpaper,
-                    onFullView = navigateToFullScreen,
-                    onOpenBrowser = {
-                        context.openUrl(it)
-                    },
-                    onShare = {
-                        context.shareUrl(it)
+                                Toast.makeText(
+                                    context,
+                                    "Failed to save wallpaper. Please try again",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        )
                     }
-                )
+                },
+                toggleFavourite = toggleFavourite,
+                onFullView = navigateToFullScreen,
+                onOpenBrowser = {
+                    context.openUrl(it)
+                },
+                onShare = {
+                    context.shareUrl(it)
+                }
+            )
 
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp)
-                )
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+            )
 
+            wallpaperDetailsState.savableWallpaper.wallpaper?.let { wallpaper ->
                 Text(
                     text = "Views : ${wallpaper.views}",
                     fontWeight = FontWeight.Medium,
@@ -200,7 +204,10 @@ fun DetailsScreen(
                 )
             }
         },
-        sheetShape = ShapeDefaults.Medium,
+        sheetShape = ShapeDefaults.Medium.copy(
+            bottomStart = CornerSize(0),
+            bottomEnd = CornerSize(0)
+        ),
         containerColor = if (isSystemInDarkTheme()) Color.Black else MaterialTheme.colorScheme.background
     ) {
         AnimatedVisibility(
@@ -212,12 +219,12 @@ fun DetailsScreen(
                 modifier = Modifier
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 CustomLoading()
             }
         }
 
-        wallpaperDetailsState.wallpaper?.let { wallpaper ->
+        wallpaperDetailsState.savableWallpaper.wallpaper?.let { wallpaper ->
 
             AsyncImage(
                 model = ImageRequest.Builder(context)
@@ -225,9 +232,8 @@ fun DetailsScreen(
                     .crossfade(true)
                     .build(),
                 contentDescription = wallpaper.id,
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
                 onState = { state ->
                     showShimmer = when (state) {
                         is AsyncImagePainter.State.Success -> false
@@ -254,68 +260,92 @@ fun DetailsScreen(
 @Composable
 fun BottomSheetIconsRow(
     rowHeight: Dp,
-    wallpaper: Wallpaper,
+    savableWallpaper: SavableWallpaper,
     onDownload: (String, String) -> Unit,
-    onSetFavourite: (Wallpaper) -> Unit,
+    toggleFavourite: (Wallpaper, Boolean) -> Unit,
     onOpenBrowser: (String) -> Unit,
     onFullView: (String) -> Unit,
     onShare: (String) -> Unit
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .height(rowHeight),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Default.Download,
-            contentDescription = null,
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .bounceClick { onDownload(wallpaper.imageUrl, wallpaper.id) }
-        )
-        Icon(
-            imageVector = Icons.Outlined.Favorite,
-            contentDescription = null,
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .bounceClick {
-                    onSetFavourite(wallpaper)
+    savableWallpaper.wallpaper?.let { wallpaper ->
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(rowHeight),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Download,
+                contentDescription = null,
+                modifier = Modifier
+                    .scale(1.2f)
+                    .padding(8.dp)
+                    .bounceClick { onDownload(wallpaper.imageUrl, wallpaper.id) },
+                tint = UiColors.Violet
+
+            )
+
+                if(savableWallpaper.isFavourite){
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = "favourite",
+                        modifier = Modifier
+                            .scale(1.2f)
+                            .padding(8.dp)
+                            .bounceClick {
+                                toggleFavourite(wallpaper, false)
+                            },
+                        tint = UiColors.Pink
+                    )
+                }else{
+                    Icon(
+                        imageVector = Icons.Outlined.FavoriteBorder,
+                        contentDescription = "favourite",
+                        modifier = Modifier
+                            .scale(1.2f)
+                            .padding(8.dp)
+                            .bounceClick {
+                                toggleFavourite(wallpaper, true)
+                            },
+                        tint = UiColors.Violet
+                    )
                 }
-        )
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-            contentDescription = null,
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .bounceClick {
-                    onOpenBrowser(wallpaper.url)
-                }
-        )
-        Icon(
-            imageVector = Icons.Default.Landscape,
-            contentDescription = null,
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .bounceClick {
-                    onFullView(wallpaper.imageUrl)
-                }
-        )
-        Icon(
-            imageVector = Icons.Default.Share,
-            contentDescription = null,
-            modifier = Modifier
-                .size(50.dp)
-                .padding(10.dp)
-                .bounceClick {
-                    onShare(wallpaper.url)
-                }
-        )
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                contentDescription = null,
+                modifier = Modifier
+                    .scale(1.2f)
+                    .padding(8.dp)
+                    .bounceClick {
+                        onOpenBrowser(wallpaper.url)
+                    },
+                tint = UiColors.Violet
+            )
+            Icon(
+                imageVector = Icons.Default.Landscape,
+                contentDescription = null,
+                modifier = Modifier
+                    .scale(1.2f)
+                    .padding(8.dp)
+                    .bounceClick {
+                        onFullView(wallpaper.imageUrl)
+                    },
+                tint = UiColors.Violet
+
+            )
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = null,
+                modifier = Modifier
+                    .scale(1.2f)
+                    .padding(10.dp)
+                    .bounceClick {
+                        onShare(wallpaper.url)
+                    },
+                tint = UiColors.Violet
+            )
+        }
     }
 }
-

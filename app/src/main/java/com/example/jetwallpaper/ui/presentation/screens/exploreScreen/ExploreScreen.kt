@@ -3,13 +3,9 @@ package com.example.jetwallpaper.ui.presentation.screens.exploreScreen
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,7 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,8 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,7 +35,7 @@ import com.example.jetwallpaper.ui.util.CustomLoading
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(
+fun ExploreScreen(
     wallpaperState: LazyPagingItems<Wallpaper>,
     uiEvent: UiEvent,
     onEvent: (UiEvent) -> Unit,
@@ -79,10 +72,7 @@ fun SearchScreen(
     }
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = Color.Transparent,
+        modifier = Modifier.fillMaxSize(),
         topBar = {
 //            AnimatedVisibility(
 //                visible = isTop,
@@ -91,29 +81,23 @@ fun SearchScreen(
 //            ) {
 //                CustomSearchBar(onSearch = updateSearchList)
 //            }
-
-            TopAppBar(
-                title = {
-                    CustomSearchBar(onSearch = updateSearchList)
-                },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent ,
-                    scrolledContainerColor = Color.Transparent
-                )
-            )
+//
+//            TopAppBar(
+//                title = {
+//                    CustomSearchBar(onSearch = updateSearchList)
+//                },
+//                scrollBehavior = scrollBehavior,
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = Color.Transparent ,
+//                    scrolledContainerColor = Color.Transparent
+//                )
+//            )
 
         }
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Transparent.copy(alpha = 0.5f))
+            modifier = Modifier.fillMaxSize()
         ) {
-
-            Box(modifier = Modifier.fillMaxWidth().height(padding.calculateTopPadding()).background(
-                Color.Transparent))
-
                 AnimatedContent(
                 targetState = wallpaperState.loadState.refresh,
                 label = "SearchScreen"
@@ -139,17 +123,21 @@ fun SearchScreen(
 
 
                         AnimatedVisibility(visible = wallpaperState.itemCount > 0) {
-                            LazyWallpaperGrid(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(
-                                        bottom = padding.calculateBottomPadding()
-                                    ),
-                                wallpaperState = wallpaperState,
-                                onClick = navigateToDetails,
-                                onEvent = onEvent,
-                                state = lazyGridState
-                            )
+                            Column {
+                                CustomSearchBar(onSearch = updateSearchList)
+
+                                LazyWallpaperGrid(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(
+                                            bottom = padding.calculateBottomPadding()
+                                        ),
+                                    wallpaperState = wallpaperState,
+                                    onClick = navigateToDetails,
+                                    onEvent = onEvent,
+                                    state = lazyGridState
+                                )
+                            }
                         }
                     }
                 }
