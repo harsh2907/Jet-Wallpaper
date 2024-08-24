@@ -3,7 +3,6 @@ package com.example.jetwallpaper.ui.presentation.screens.details_screen
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -44,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.ui.presentation.utils.WallpaperUtils

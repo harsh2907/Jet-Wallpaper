@@ -1,40 +1,21 @@
 package com.example.jetwallpaper
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.LifecycleResumeEffect
-import com.example.jetwallpaper.ui.presentation.screens.main.ErrorComponent
-import com.example.jetwallpaper.ui.presentation.screens.main.JetWallpaperNavScreen
-import com.example.jetwallpaper.ui.theme.JetWallpaperTheme
+import com.example.shared.App
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalPermissionsApi::class)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            JetWallpaperTheme {
+            App()
+/*            JetWallpaperTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -95,7 +76,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-            }
+            }*/
         }
     }
 

@@ -2,6 +2,7 @@ package com.example.jetwallpaper.domain.models.details
 
 import com.example.jetwallpaper.domain.models.Wallpaper
 
+
 data class WallpaperDetailsData(
     val category: String,
     val colors: List<String>,
@@ -24,7 +25,7 @@ data class WallpaperDetailsData(
     val url: String,
     val views: Int
 ){
-    fun toWallpaper():Wallpaper =  Wallpaper(
+    fun toWallpaper(): Wallpaper =  Wallpaper(
         id = id,
         createdAt = created_at,
         fileSize = file_size,

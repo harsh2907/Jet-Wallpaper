@@ -33,6 +33,7 @@ fun JetWallpaperNavScreen() {
                 BottomNavigationBar(navController = navController)
             }
         }) { padding ->
+
         JetWallpaperNavScreenContent(
             navController = navController,
             modifier = Modifier

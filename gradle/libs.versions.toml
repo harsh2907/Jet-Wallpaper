@@ -1,0 +1,146 @@
+[versions]
+accompanistPermissions = "0.32.0"
+accompanistPlaceholder = "0.27.0"
+activityCompose = "1.9.1"
+coil3 = "3.0.0-alpha06"
+coilCompose = "2.6.0"
+coilSvg = "2.4.0"
+composeBomVersion = "2024.06.00"
+composeMaterial = "1.3.1"
+core = "12.1.0"
+gson = "2.10.1"
+navigationComposeMP = "2.7.0-alpha07"
+pagingCompose = "3.3.2"
+ui = "1.6.7"
+converterGson = "2.9.0"
+coreKtx = "1.13.1"
+espressoCore = "3.6.1"
+hiltNavigationCompose = "1.2.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+lifecycleversion = "2.7.0"
+loggingInterceptor = "4.12.0"
+material = "1.12.0"
+navigationCompose = "2.7.7"
+retrofit = "2.9.0"
+roomRuntime = "2.6.1"
+roomKtx = "2.6.1"
+roomCompiler = "2.6.1"
+agp = "8.5.2"
+kotlin = "2.0.0"
+ksp = "2.0.0-1.0.24"
+hilt = "2.50"
+compose-plugin = "1.6.11"
+koin = "3.6.0-Beta4"
+koinComposeMultiplatform = "1.2.0-Beta4"
+lifecycleViewModel = "2.8.4"
+ktor = "2.3.12"
+androidx-lifecycle = "2.8.0"
+
+
+
+[libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
+accompanist-placeholder = { module = "com.google.accompanist:accompanist-placeholder", version.ref = "accompanistPlaceholder" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+material3 = { module = "androidx.compose.material3:material3" }
+material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
+androidx-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeMaterial" }
+
+ui = { group = "androidx.compose.ui",name ="ui" }
+ui-graphics = { group = "androidx.compose.ui",name="ui-graphics" }
+ui-tooling-preview = { group = "androidx.compose.ui",name ="ui-tooling-preview" }
+androidx-ui-tooling = { group = "androidx.compose.ui",name ="ui-tooling" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui",name = "ui-test-junit4" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui",name = "ui-test-manifest" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+junit = { module = "junit:junit", version.ref = "junit" }
+ext-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleversion" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleversion" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleversion" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleversion" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleversion" }
+
+#Coil
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coilSvg" }
+
+#Room
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+
+#Hilt
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+
+#Retrofit
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+
+#Navigation CMP
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationComposeMP" }
+
+androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-composemultiplatform = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+
+#Coil
+coil-composemultiplatform = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
+coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil3" }
+coil-mp = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
+
+
+#Koin
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComposeMultiplatform" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinComposeMultiplatform" }
+
+#Ktor
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
+hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+[bundles]
+ktor = [
+    "ktor-client-core",
+    "ktor-client-content-negotiation",
+    "ktor-client-auth",
+    "ktor-client-logging",
+    "ktor-serialization-kotlinx-json",
+]
+coil = [
+    "coil-composemultiplatform",
+    "coil-network-ktor",
+    "coil-mp",
+    "coil-compose-core"
+]

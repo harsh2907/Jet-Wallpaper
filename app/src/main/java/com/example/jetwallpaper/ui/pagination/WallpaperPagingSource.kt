@@ -3,14 +3,14 @@ package com.example.jetwallpaper.ui.pagination
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.jetwallpaper.data.network.WallpaperResponse
-import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.data.utils.Constants
+import com.example.jetwallpaper.domain.models.Wallpaper
 import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel.Companion.PAGE_SIZE
 import retrofit2.HttpException
 import java.io.IOException
 
 class PopularWallpaperPagingSource(
-    private val api:WallpaperResponse
+    private val api: WallpaperResponse
 ): PagingSource<Int, Wallpaper>()
 {
     override fun getRefreshKey(state: PagingState<Int, Wallpaper>): Int? {
@@ -23,7 +23,6 @@ class PopularWallpaperPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Wallpaper> {
             val position = params.key ?: 1
             return try {
-
             val response = api.getWallpapers(
                 queryParam = Constants.POPULAR,
                 sorting = Constants.sortingPopular,
@@ -50,7 +49,7 @@ class PopularWallpaperPagingSource(
 
 
 class NewWallpaperPagingSource(
-    private val api:WallpaperResponse
+    private val api: WallpaperResponse
 ): PagingSource<Int, Wallpaper>()
 {
     override fun getRefreshKey(state: PagingState<Int, Wallpaper>): Int? {

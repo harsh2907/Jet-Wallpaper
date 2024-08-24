@@ -12,5 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Jet Wallpaper"
+rootProject.name = "Jet-Wallpaper"
 include ':app'
+include ':shared'

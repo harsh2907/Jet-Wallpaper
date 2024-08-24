@@ -22,8 +22,8 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.example.jetwallpaper.R
 import com.example.jetwallpaper.domain.models.Wallpaper
-import com.example.jetwallpaper.ui.presentation.screens.components.LazyWallpaperGrid
 import com.example.jetwallpaper.ui.presentation.screens.components.CustomSearchBar
+import com.example.jetwallpaper.ui.presentation.screens.components.LazyWallpaperGrid
 import com.example.jetwallpaper.ui.presentation.viewmodel.UiEvent
 import com.example.jetwallpaper.ui.util.CustomLoading
 

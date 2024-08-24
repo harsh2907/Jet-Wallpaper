@@ -14,7 +14,7 @@ import com.example.jetwallpaper.ui.presentation.viewmodel.MainViewModel.Companio
 import kotlinx.coroutines.flow.Flow
 
 class WallpaperRepositoryImpl(
-    private val api:WallpaperResponse,
+    private val api: WallpaperResponse,
     private val dao: WallpaperDao
 ):WallpaperRepository {
 

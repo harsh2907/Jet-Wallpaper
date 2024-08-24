@@ -2,6 +2,7 @@ package com.example.jetwallpaper.domain.models.search_result
 
 import com.example.jetwallpaper.domain.models.Wallpaper
 
+
 data class ResultDTO(
     val category: String,
     val colors: List<String>,
@@ -22,7 +23,7 @@ data class ResultDTO(
     val url: String,
     val views: Int
 ){
-    fun toWallpaper():Wallpaper =  Wallpaper(
+    fun toWallpaper(): Wallpaper =  Wallpaper(
             id = id,
             createdAt = created_at,
             fileSize = file_size,
